@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data load from express</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+</head>
+<body>
+    <h5>This is the node and mongo data load</h5><br>
+    <ul id="user-name"></ul>
+     <div class="container">
+         <div class="row">
+             <input type="text" class="form-control" id="name"  placeholder="Enter Product Name">
+             <input type="text" class="form-control" id="price" placeholder="Enter Product Price">
+             <input type="text" class="form-control" id="stock" placeholder="Enter Product Stock">
+             <button class="btn btn-success" id="add-product">Add Product</button>
+        </div>
+     </div>
+         
+          <p style="color:green;display: none;"  id="success-message">
+               <small>Product Added Successfully...</small>
+          </p>
+     <br>
+    
+      <ul id="product-list"></ul>
+
+    <script>
+
+
+       //Get Data from Database 
+       fetch('http://localhost:3000/products')
+         .then( res => res.json())
+         .then (data =>{
+            displayProduct(data)
+         });
+
+
+         function displayProduct(data){
+              const productList = document.getElementById('product-list');
+              for (let i = 0; i < data.length; i++) {
+                  const product = data[i];
+                  appendProduct(product,productList);
+                //   const item = document.createElement('li');
+                //   item.innerText = `name: ${product.name} ,  Price : ${product.price} , Stock : ${product.stock}`;
+                //   productList.appendChild(item);
+                  
+              }
+         }
+
+         function appendProduct(product , productList){
+                  const item = document.createElement('li');
+                  item.innerText = `name: ${product.name} ,  Price : ${product.price} , Stock : ${product.stock}`;
+                  productList.appendChild(item);
+         }
+         
+        //  fetch('http://localhost:3000/users/0')
+        //  .then( res => res.json())
+        //  .then (data =>{
+        //       document.getElementById('user-name').innerText = data.name;
+        //  });
+         
+
+         //Post data on Website
+     
+          const btn = document.getElementById("add-product");
+          btn.addEventListener("click" , () =>{
+               const name =  document.getElementById('name').value;
+               const price = document.getElementById('price').value;
+               const stock = document.getElementById('stock').value;
+               const product = {name , price , stock};
+               console.log(product);
+
+               fetch('http://localhost:3000/addProducts' , {
+                    method : 'POST',
+                    body : JSON.stringify(product),
+                    headers: {
+                                "Content-type": "application/json; charset=UTF-8"
+                             }
+
+               })
+               .then(res => res.json())
+               .then(data => {
+                   showProduct(data);
+                       document.getElementById('name').value =  '' ;
+                       document.getElementById('price').value = '';
+                       document.getElementById('stock').value = '';
+                       const success = document.getElementById('success-message');
+                              success.style.display = 'block';
+
+                         setTimeout( () =>{
+                             success.style.display = 'none';
+                         },5000)
+                });
+          })
+
+          function showProduct(product){
+              const productList = document.getElementById('product-list');
+              appendProduct(product,productList);
+              document.getElementById('user-name').innerText = product.name;
+          }
+
+    </script>
+     
+</body>
+</html>

@@ -78,19 +78,69 @@ app.get('/products',(req,res) =>{
         });
  })
 
+app.get('/products/:key', (req,res) =>{
+      const key = req.params.key;
+      client = new MongoClient(uri, { useNewUrlParser: true });
+      client.connect(err => {
+           const collection = client.db("onlineStore").collection("products");
+           collection.find({key}).toArray((err, document) =>{
+                 // console.log('Inserted Products successfully..', res);
+                  //  res.send(product);
+                 if(err){
+                       console.log(err);
+                       res.status(500).send({message:err});
+                 }
+                 else{
+                       res.send(document[0]);
+                 }
+           })
+            // console.log('Database connected..');
+             client.close();
+           
+         });
+})
+
+///get multiples values by id using mongodb database
+
+
+app.post('/getProductsByKey', (req,res) =>{
+      const key = req.params.key;
+      const productKey = req.body;
+      console.log(productKey);
+      client = new MongoClient(uri, { useNewUrlParser: true });
+      client.connect(err => {
+           const collection = client.db("onlineStore").collection("products");
+           collection.find({key: {$in : productKey}}).toArray((err, document) =>{
+                 // console.log('Inserted Products successfully..', res);
+                  //  res.send(product);
+                 if(err){
+                       console.log(err);
+                       res.status(500).send({message:err});
+                 }
+                 else{
+                       res.send(document);
+                 }
+           })
+            // console.log('Database connected..');
+             client.close();
+           
+         });
+})
+
+//get value 
 app.get('/banana/fruits' , (req ,res) =>{
       res.send({fruits : 'apple' , quantity : 200});
 })
 
-app.get('/users/:id' , (req, res) =>{
-      //console.log(req.params.id);
-      console.log(req.query);
-      const id = req.params.id ;
-      const name = users[id];
-     // console.log(name , id);
-     res.send({id , name});
+// app.get('/users/:id' , (req, res) =>{
+//       //console.log(req.params.id);
+//       console.log(req.query);
+//       const id = req.params.id ;
+//       const name = users[id];
+//      // console.log(name , id);
+//      res.send({id , name});
 
-})
+// })
 //post request 
 
 // app.post('/adduser' , (req,res) =>{
@@ -114,7 +164,7 @@ app.post('/addProducts',(req,res) =>{
        client = new MongoClient(uri, { useNewUrlParser: true });
        client.connect(err => {
           const collection = client.db("onlineStore").collection("products");
-          collection.insertOne(product, (err, result) =>{
+          collection.insert(product, (err, result) =>{
                  //console.log('Inserted Products successfully..', res);
                 //res.send(product);
                 if(err){
@@ -133,7 +183,36 @@ app.post('/addProducts',(req,res) =>{
 })
 
 
+//placed order api
+
+
+app.post('/orderPlaced',(req,res) =>{
+      const orderDetails = req.body;
+      orderDetails.orderTime = new Date();
+      console.log(orderDetails);
+      client = new MongoClient(uri, { useNewUrlParser: true });
+      client.connect(err => {
+         const collection = client.db("onlineStore").collection("orders");
+         collection.insertOne(orderDetails, (err, result) =>{
+                //console.log('Inserted Products successfully..', res);
+               //res.send(product);
+               if(err){
+                     console.log(err);
+                     res.status(500).send({message:err});
+               }
+               else{
+                     res.send(result.ops[0]);
+               }
+         })
+         //console.log('Database connected..');
+         client.close();
+         
+       });
+       
+})
+
+
 
 
 const port = process.env.PORT || 4200;
-app.listen(port , () => console.log('Running on the 3000 port'));
+app.listen(port , () => console.log('Running on the 4200 port'));

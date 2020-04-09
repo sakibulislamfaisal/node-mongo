@@ -17,7 +17,7 @@ const uri = process.env.DB_PATH;
 // const uri = `mongodb+srv://${username}:${password}@cluster0-mbeyh.mongodb.net/test?retryWrites=true&w=majority`;
 
 //Create a connection with MongoClient
-let client = new MongoClient(uri, { useNewUrlParser: true });
+let client = new MongoClient(uri, { useNewUrlParser: true});
 
 
 
@@ -72,7 +72,7 @@ app.get('/products',(req,res) =>{
                       res.send(document);
                 }
           })
-           // console.log('Database connected..');
+            console.log('Database connected..');
             client.close();
           
         });

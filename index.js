@@ -78,6 +78,31 @@ app.get('/products',(req,res) =>{
         });
  })
 
+
+ //Orders Api from database 
+
+ 
+app.get('/orders',(req,res) =>{
+      client = new MongoClient(uri, { useNewUrlParser: true });
+      client.connect(err => {
+           const collection = client.db("onlineStore").collection("orders");
+           collection.find().toArray((err, document) =>{
+                 // console.log('Inserted Products successfully..', res);
+                  //  res.send(product);
+                 if(err){
+                       console.log(err);
+                       res.status(500).send({message:err});
+                 }
+                 else{
+                       res.send(document);
+                 }
+           })
+             console.log('Database connected..');
+             client.close();
+           
+         });
+  })
+
 app.get('/products/:key', (req,res) =>{
       const key = req.params.key;
       client = new MongoClient(uri, { useNewUrlParser: true });

@@ -215,4 +215,4 @@ app.post('/orderPlaced',(req,res) =>{
 
 
 const port = process.env.PORT || 4200;
-app.listen(port , () => console.log('Running on the 4200 port'));
+app.listen(port , (err) => console.log('Running on the port',port));
